@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalProvider
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.miprimerproyecto.ui.theme.MiPrimerProyectoTheme
@@ -24,7 +24,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             MiPrimerProyectoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    FichaDelEstudiante(modifier = Modifier.padding(innerPadding))
+                    Column(modifier = Modifier.padding(innerPadding).padding(16.dp)) {
+                        DatoDelEstudiante(etiqueta = "Nombre", valor = "Juan")
+                        DatoDelEstudiante(etiqueta = "Edad", valor = DescripcionEdad(20))
+                        DatoDelEstudiante(etiqueta = "Carrera", valor = "Sistemas" )
+                        DatoDelEstudiante(etiqueta = "Anio", valor = "1" )
+                        Botoncito()
+                    }
                 }
             }
         }
@@ -32,26 +38,27 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun FichaDelEstudiante(modifier: Modifier = Modifier) {
-    val nombre = "Ana"
-    val edad = 20
-    val promedio = 8.25
-    val cursaProgramacion = true
-    val anioProximo= edad+1
-    val documento: String= "24546456"
-    val materias: Int = 5
-    val ciudad: String= "Cordoba"
+fun DatoDelEstudiante(etiqueta: String, valor: String, modifier: Modifier = Modifier) {
+    Row(modifier = modifier) {
+        Text(text = "$etiqueta: ")
+        Text(text = valor)
+    }
+}
 
-    Column(modifier) {
-        Text("Nombre $nombre", modifier = Modifier.padding(all = 30.dp) )
-        Text("Edad $edad", modifier = Modifier.padding(all = 30.dp))
-        Text("Promedio $promedio", modifier = Modifier.padding(all = 30.dp))
-        Text("CursaProgramacion $cursaProgramacion", modifier = Modifier.padding(all = 30.dp))
-        Text("AñoProximo $anioProximo", modifier = Modifier.padding(all = 30.dp))
-        Text("Documento: $documento" , modifier = Modifier.padding(all = 30.dp))
-//        Otra forma de mostrar los textos
-        Text("Materias:" + materias, modifier = Modifier.padding(all = 30.dp))
-        Text("Ciudad:" + ciudad, modifier = Modifier.padding(all = 30.dp))
+@Composable
+fun DescripcionEdad(edad: Int): String {
+    if (edad >= 18) {
+        return "Es mayor de edad, edad: $edad años"
+    }
+    return "Edad: $edad años"
+}
+
+@Composable
+fun Botoncito() {
+    Button(onClick = {
+        println("Mi primer botoncito")
+    }) {
+        Text(text = "Clikea para ver la magia")
     }
 }
 
@@ -59,6 +66,10 @@ fun FichaDelEstudiante(modifier: Modifier = Modifier) {
 @Composable
 fun PresentacionPreview() {
     MiPrimerProyectoTheme {
-        FichaDelEstudiante()
+        Column(modifier = Modifier.padding(16.dp)) {
+            DatoDelEstudiante(etiqueta = "Nombre", valor = "Juan")
+            DatoDelEstudiante(etiqueta = "Edad", valor = DescripcionEdad(20))
+            Botoncito()
+        }
     }
 }
