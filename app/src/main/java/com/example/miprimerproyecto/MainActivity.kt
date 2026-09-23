@@ -12,6 +12,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,12 +28,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             MiPrimerProyectoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Column(modifier = Modifier.padding(innerPadding).padding(16.dp)) {
-                        DatoDelEstudiante(etiqueta = "Nombre", valor = "Juan")
-                        DatoDelEstudiante(etiqueta = "Edad", valor = DescripcionEdad(20))
-                        DatoDelEstudiante(etiqueta = "Carrera", valor = "Sistemas" )
-                        DatoDelEstudiante(etiqueta = "Anio", valor = "1" )
-                        Botoncito()
+                    Column(modifier = Modifier
+                        .padding(innerPadding)
+                        .padding(16.dp)) {
+                        Contador()
                     }
                 }
             }
@@ -38,27 +40,20 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun DatoDelEstudiante(etiqueta: String, valor: String, modifier: Modifier = Modifier) {
-    Row(modifier = modifier) {
-        Text(text = "$etiqueta: ")
-        Text(text = valor)
-    }
-}
+fun Contador() {
+    var contador by remember { mutableStateOf(0) }
 
-@Composable
-fun DescripcionEdad(edad: Int): String {
-    if (edad >= 18) {
-        return "Es mayor de edad, edad: $edad años"
-    }
-    return "Edad: $edad años"
-}
-
-@Composable
-fun Botoncito() {
-    Button(onClick = {
-        println("Mi primer botoncito")
-    }) {
-        Text(text = "Clikea para ver la magia")
+    Column {
+        Text("Valor: $contador")
+        Button(onClick = { contador++ }) {
+            Text("+1")
+        }
+        Button(onClick = { if (contador > 0) contador-- }) {
+            Text("-1")
+        }
+        Button(onClick = { contador = 0 }) {
+            Text("Reiniciar")
+        }
     }
 }
 
@@ -66,10 +61,9 @@ fun Botoncito() {
 @Composable
 fun PresentacionPreview() {
     MiPrimerProyectoTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            DatoDelEstudiante(etiqueta = "Nombre", valor = "Juan")
-            DatoDelEstudiante(etiqueta = "Edad", valor = DescripcionEdad(20))
-            Botoncito()
+        Column(modifier = Modifier
+            .padding(16.dp)) {
+            Contador()
         }
     }
 }
