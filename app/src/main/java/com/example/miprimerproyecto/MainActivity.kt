@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     Column(modifier = Modifier
                         .padding(innerPadding)
                         .padding(16.dp)) {
-                        Contador()
+                        ClasificadorDeEdad()
                     }
                 }
             }
@@ -40,20 +42,37 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Contador() {
-    var contador by remember { mutableStateOf(0) }
+fun ClasificadorDeEdad() {
+    var nombre by remember { mutableStateOf("") }
+    var edadTexto by remember { mutableStateOf("") }
+    var resultado by remember { mutableStateOf("") }
 
     Column {
-        Text("Valor: $contador")
-        Button(onClick = { contador++ }) {
-            Text("+1")
+        TextField(
+            value = nombre,
+            onValueChange = { nombre = it },
+            label = { Text("Nombre") }
+        )
+        OutlinedTextField(
+            value = edadTexto,
+            onValueChange = { edadTexto = it },
+            label = { Text("Edad") }
+        )
+        Button(onClick = {
+            val edadNumero = edadTexto.toIntOrNull()
+            resultado = if (edadNumero == null) {
+                "Error: ingresá un número válido"
+            } else if (edadNumero < 0) {
+                "El dato no es válido"
+            } else if (edadNumero < 18) {
+                "$nombre es menor de edad"
+            } else {
+                "$nombre es mayor de edad"
+            }
+        }) {
+            Text("Evaluar")
         }
-        Button(onClick = { if (contador > 0) contador-- }) {
-            Text("-1")
-        }
-        Button(onClick = { contador = 0 }) {
-            Text("Reiniciar")
-        }
+        Text(resultado)
     }
 }
 
@@ -63,7 +82,7 @@ fun PresentacionPreview() {
     MiPrimerProyectoTheme {
         Column(modifier = Modifier
             .padding(16.dp)) {
-            Contador()
+            ClasificadorDeEdad()
         }
     }
 }
