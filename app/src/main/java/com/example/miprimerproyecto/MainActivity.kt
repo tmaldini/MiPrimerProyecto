@@ -1,6 +1,7 @@
 package com.example.miprimerproyecto
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
                     Column(modifier = Modifier
                         .padding(innerPadding)
                         .padding(16.dp)) {
-                        ClasificadorDeEdad()
+                        Calculadora()
                     }
                 }
             }
@@ -42,37 +43,54 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ClasificadorDeEdad() {
-    var nombre by remember { mutableStateOf("") }
-    var edadTexto by remember { mutableStateOf("") }
+fun Calculadora() {
+    var numero1 by remember { mutableStateOf("") }
+    var numero2 by remember { mutableStateOf("") }
     var resultado by remember { mutableStateOf("") }
 
     Column {
-        TextField(
-            value = nombre,
-            onValueChange = { nombre = it },
-            label = { Text("Nombre") }
+        OutlinedTextField(
+            value = numero1,
+            onValueChange = { numero1 = it },
+            label = { Text("Número 1") }
         )
         OutlinedTextField(
-            value = edadTexto,
-            onValueChange = { edadTexto = it },
-            label = { Text("Edad") }
+            value = numero2,
+            onValueChange = { numero2 = it },
+            label = { Text("Número 2") }
         )
         Button(onClick = {
-            val edadNumero = edadTexto.toIntOrNull()
-            resultado = if (edadNumero == null) {
-                "Error: ingresá un número válido"
-            } else if (edadNumero < 0) {
-                "El dato no es válido"
-            } else if (edadNumero < 18) {
-                "$nombre es menor de edad"
-            } else {
-                "$nombre es mayor de edad"
-            }
+            val a = numero1.toDoubleOrNull() ?: 0.0
+            val b = numero2.toDoubleOrNull() ?: 0.0
+            resultado = calcular(a, b, "sumar").toString()
         }) {
-            Text("Evaluar")
+            Text("Sumar")
         }
-        Text(resultado)
+        Button(onClick = {
+            val a = numero1.toDoubleOrNull() ?: 0.0
+            val b = numero2.toDoubleOrNull() ?: 0.0
+            resultado = calcular(a, b, "restar").toString()
+        }) {
+            Text("Restar")
+        }
+        Button(onClick = {
+            val a = numero1.toDoubleOrNull() ?: 0.0
+            val b = numero2.toDoubleOrNull() ?: 0.0
+            resultado = calcular(a, b, "multiplicar").toString()
+        }) {
+            Text("Multiplicar")
+        }
+        Text("Resultado: $resultado")
+    }
+}
+
+fun calcular(a: Double, b: Double, operacion: String): Double {
+    Log.d("CALCULADORA", "a=$a b=$b operacion=$operacion")
+    return when (operacion) {
+        "sumar" -> a + b
+        "restar" -> a - b
+        "multiplicar" -> a * b
+        else -> 0.0
     }
 }
 
@@ -82,7 +100,7 @@ fun PresentacionPreview() {
     MiPrimerProyectoTheme {
         Column(modifier = Modifier
             .padding(16.dp)) {
-            ClasificadorDeEdad()
+            Calculadora()
         }
     }
 }
