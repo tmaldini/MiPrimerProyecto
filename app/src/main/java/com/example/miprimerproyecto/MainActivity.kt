@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ClasificadorDeEdad() {
-    var nombre by remember { mutableStateOf("") }
+    var nombre by remember { mutableStateOf("") }  //siempre string
     var edadTexto by remember { mutableStateOf("") }
     var resultado by remember { mutableStateOf("") }
 
@@ -59,7 +59,7 @@ fun ClasificadorDeEdad() {
             label = { Text("Edad") }
         )
         Button(onClick = {
-            val edadNumero = edadTexto.toIntOrNull()
+            val edadNumero = edadTexto.toIntOrNull()     //convierte string a int o null Int?
             resultado = if (edadNumero == null) {
                 "Error: ingresá un número válido"
             } else if (edadNumero < 0) {
