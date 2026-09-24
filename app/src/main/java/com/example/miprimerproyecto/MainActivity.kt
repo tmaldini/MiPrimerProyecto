@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.miprimerproyecto.ui.theme.MiPrimerProyectoTheme
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateListOf
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
                     Column(modifier = Modifier
                         .padding(innerPadding)
                         .padding(16.dp)) {
-                        CompartirRecomendacion()
+                        OrganizadorDeCursada()
                     }
                 }
             }
@@ -54,75 +55,93 @@ class MainActivity : ComponentActivity() {
     }
 }
 // ============================================
-// EJERCICIO 12 — Primer contacto con el Android SDK: Context e Intents
+// EJERCICIO 13 — Miniaplicación integradora: organizador de cursada
 // ============================================
-// Consigna: pantalla "Compartir recomendación" con texto y botón.
-// Al presionar, abrir el selector de apps para compartir un mensaje
-// mediante Intent.ACTION_SEND.
-// Parte B: otro botón que abra una dirección web mediante
-// Intent.ACTION_VIEW y una URI.
-//
-// ------------------------------------------------------------
-// KOTLIN vs COMPOSE vs ANDROID SDK — cómo distinguirlos
-// ------------------------------------------------------------
-// Kotlin: el lenguaje en sí (val, var, fun, if). Existiría
-// aunque no estuvieras haciendo una app Android.
-//
-// Compose: la caja de herramientas para DIBUJAR pantallas
-// (Text, Button, Column). Es una librería que se usa PARA
-// Android, pero no es Android en sí.
-//
-// Android SDK: todo lo que tiene que ver con pedirle algo al
-// SISTEMA OPERATIVO del teléfono (cámara, compartir, abrir
-// el navegador). Context e Intent existían desde antes de
-// que Compose existiera; no dibujan nada, le piden cosas al SO.
-//
-// Pregunta rápida para cada línea:
-// - ¿Existiría en cualquier lenguaje? -> Kotlin
-// - ¿Dibuja algo en pantalla?         -> Compose
-// - ¿Le pide algo al teléfono/SO?     -> Android SDK
+// Consigna: "Organizador de cursada" con actividades académicas.
+// Debe permitir: ingresar título, ingresar/seleccionar materia,
+// asignar prioridad, agregar la actividad, listar con LazyColumn,
+// marcar como completada, eliminar, mostrar cuántas pendientes.
+
+data class Actividad(
+    val titulo: String,
+    val materia: String,
+    val prioridad: Int,
+    val completada: Boolean = false
+)
 
 @Composable
-fun CompartirRecomendacion() {
-    // LocalContext.current es un caso mixto:
-    // - la FUNCIÓN es de Compose (te la da Compose para poder
-    //   acceder a cosas del SDK desde adentro de una pantalla)
-    // - lo que DEVUELVE (el Context) es del Android SDK
-    // Se lee AFUERA del onClick, no adentro (si lo leyeras
-    // adentro, no compila: es una llamada @Composable)
-    val context = LocalContext.current
+fun OrganizadorDeCursada() {
+    var titulo by remember { mutableStateOf("") }
+    var materia by remember { mutableStateOf("") }
+    var prioridadTexto by remember { mutableStateOf("") }
+
+    // mutableStateListOf, mismo motivo que en el Ejercicio 10
+    val actividades = remember { mutableStateListOf<Actividad>() }
 
     Column {
-        Text(text = "Estoy aprendiendo Android con Compose")
+        OutlinedTextField(
+            value = titulo,
+            onValueChange = { titulo = it },
+            label = { Text("Título") }
+        )
+        OutlinedTextField(
+            value = materia,
+            onValueChange = { materia = it },
+            label = { Text("Materia") }
+        )
+        OutlinedTextField(
+            value = prioridadTexto,
+            onValueChange = { prioridadTexto = it },
+            label = { Text("Prioridad (número)") }
+        )
 
         Button(onClick = {
-            // Intent: Android SDK. Le pide al sistema que busque
-            // qué apps pueden manejar la acción ACTION_SEND
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, "Estoy aprendiendo Android con Compose")
+            // mismo patrón de validación que el Ejercicio 10
+            val prioridad = prioridadTexto.toIntOrNull()
+            if (titulo.isNotBlank() && materia.isNotBlank() && prioridad != null) {
+                actividades.add(Actividad(titulo, materia, prioridad))
+                titulo = ""
+                materia = ""
+                prioridadTexto = ""
             }
-            // createChooser: muestra el selector de apps del sistema
-            context.startActivity(Intent.createChooser(intent, "Compartir con"))
         }) {
-            Text("Compartir")
+            Text("Agregar actividad")
         }
 
-        // Parte B: segundo botón, con ACTION_VIEW y una URI
-        Button(onClick = {
-            // Uri: Android SDK, representa la dirección web
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://developer.android.com"))
-            context.startActivity(intent)
-        }) {
-            Text("Abrir web")
+        // Requisito: mostrar cuántas están pendientes.
+        // count { !it.completada }, no it.completada (eso contaría
+        // las YA completadas, es el error típico de este ejercicio)
+        Text("Pendientes: ${actividades.count { !it.completada }}")
+
+        // items(), no itemsIndexed: mismo patrón que Ejercicio 9 y 10
+        LazyColumn {
+            items(actividades) { actividad ->
+                Column {
+                    Row {
+                        Text(text = actividad.titulo)
+                        Text(text = " - ${actividad.materia}")
+                        Text(text = " - Prioridad ${actividad.prioridad}")
+                    }
+                    Text(text = if (actividad.completada) "Completada" else "Pendiente")
+
+                    Row {
+                        Button(onClick = {
+                            val index = actividades.indexOf(actividad)
+                            actividades[index] = actividad.copy(completada = true)
+                        }) {
+                            Text("Completar")
+                        }
+                        Button(onClick = {
+                            actividades.remove(actividad)
+                        }) {
+                            Text("Eliminar")
+                        }
+                    }
+                }
+            }
         }
     }
 }
-
-// Nota de la guía: no es necesario solicitar permisos peligrosos
-// para este ejercicio. Si alguna vez una IA te sugiere agregar
-// permisos en el Manifest acá, es la señal para parar y revisar
-// antes de aplicarlo — no hace falta.
 
 @Preview(showBackground = true)
 @Composable
@@ -134,7 +153,7 @@ fun FichaPreview() {
                     .padding(innerPadding)
                     .padding(16.dp)
             ) {
-                CompartirRecomendacion()
+                OrganizadorDeCursada()
             }
         }
     }
