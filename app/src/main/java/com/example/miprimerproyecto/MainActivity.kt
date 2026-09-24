@@ -41,14 +41,22 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// ============================================
+// EJERCICIO 7 — TextField, if/when y null safety
+// ============================================
+// Consigna: "Clasificador de edad" con campo nombre, campo edad,
+// botón Evaluar y resultado. Manejar texto no numérico, negativo,
+// menor y mayor de edad.
+// Desafío: reemplazar el if por when.
+
 @Composable
 fun ClasificadorDeEdad() {
-    var nombre by remember { mutableStateOf("") }  //siempre string
+    var nombre by remember { mutableStateOf("") }
     var edadTexto by remember { mutableStateOf("") }
     var resultado by remember { mutableStateOf("") }
 
     Column {
-        TextField(
+        OutlinedTextField(
             value = nombre,
             onValueChange = { nombre = it },
             label = { Text("Nombre") }
@@ -59,15 +67,19 @@ fun ClasificadorDeEdad() {
             label = { Text("Edad") }
         )
         Button(onClick = {
-            val edadNumero = edadTexto.toIntOrNull()     //convierte string a int o null Int?
-            resultado = if (edadNumero == null) {
-                "Error: ingresá un número válido"
-            } else if (edadNumero < 0) {
-                "El dato no es válido"
-            } else if (edadNumero < 18) {
-                "$nombre es menor de edad"
-            } else {
-                "$nombre es mayor de edad"
+            // toIntOrNull() en vez de toInt(): si el texto no es
+            // un número válido, devuelve null en vez de cerrar la app
+            val edadNumero = edadTexto.toIntOrNull()
+
+            // when sin argumento (reemplaza la cadena de if/else):
+            // el chequeo de null va SIEMPRE primero. Recién después
+            // de descartarlo, Kotlin sabe que edadNumero es un Int
+            // seguro (smart cast) y puede compararlo con < 0 y < 18
+            resultado = when {
+                edadNumero == null -> "Error: ingresá un número válido"
+                edadNumero < 0 -> "El dato no es válido"
+                edadNumero < 18 -> "$nombre es menor de edad"
+                else -> "$nombre es mayor de edad"
             }
         }) {
             Text("Evaluar")
