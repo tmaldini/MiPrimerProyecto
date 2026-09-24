@@ -57,12 +57,12 @@ fun Calculadora() {
         OutlinedTextField(
             value = numero2,
             onValueChange = { numero2 = it },
-            label = { Text("Número 2") }
+            label = { Text("Número 2") }      //devuelve siempre string
         )
         Button(onClick = {
-            val a = numero1.toDoubleOrNull() ?: 0.0
+            val a = numero1.toDoubleOrNull() ?: 0.0  //lo convierte a doble o null
             val b = numero2.toDoubleOrNull() ?: 0.0
-            resultado = calcular(a, b, "sumar").toString()
+            resultado = calcular(a, b, "sumar").toString() //lo vuelve a convertir a string
         }) {
             Text("Sumar")
         }
@@ -84,7 +84,7 @@ fun Calculadora() {
     }
 }
 
-fun calcular(a: Double, b: Double, operacion: String): Double {
+fun calcular(a: Double, b: Double, operacion: String): Double { //no es composite porque es pura logica
     Log.d("CALCULADORA", "a=$a b=$b operacion=$operacion")
     return when (operacion) {
         "sumar" -> a + b
