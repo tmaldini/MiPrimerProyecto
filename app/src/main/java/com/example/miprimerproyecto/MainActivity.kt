@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -23,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.miprimerproyecto.ui.theme.MiPrimerProyectoTheme
-
+import androidx.compose.foundation.lazy.items
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     Column(modifier = Modifier
                         .padding(innerPadding)
                         .padding(16.dp)) {
-                        Calculadora()
+                        ListaDeMaterias()
                     }
                 }
             }
@@ -42,55 +43,39 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+data class Materia(  //clase que no modifica sus valores
+    val nombre: String,
+    val anio: Int,
+    val aprobada: Boolean
+)
+
 @Composable
-fun Calculadora() {
-    var numero1 by remember { mutableStateOf("") }
-    var numero2 by remember { mutableStateOf("") }
-    var resultado by remember { mutableStateOf("") }
+fun ListaDeMaterias() {
+    val materias = listOf( //lista no mutable
+        Materia("Programacion I", 1, true),
+        Materia("Matematica", 1, false),
+        Materia("Programacion II", 1, true),
+        Materia("Fisica", 2, false),
+        Materia("Base de Datos", 2, true)
+    )
 
     Column {
-        OutlinedTextField(
-            value = numero1,
-            onValueChange = { numero1 = it },
-            label = { Text("Número 1") }
-        )
-        OutlinedTextField(
-            value = numero2,
-            onValueChange = { numero2 = it },
-            label = { Text("Número 2") }
-        )
-        Button(onClick = {
-            val a = numero1.toDoubleOrNull() ?: 0.0
-            val b = numero2.toDoubleOrNull() ?: 0.0
-            resultado = calcular(a, b, "sumar").toString()
-        }) {
-            Text("Sumar")
+        Text("Cantidad de materias: ${materias.size}") //muestra la cantidad de materias
+        LazyColumn {  //lista que muestra solo lo visible no como column que dibujaria las 5 materias
+//            items(materias.filter { it.aprobada }) { materia -> para ver solo las aprobadas es decir true
+            items(materias) { materia ->
+                MateriaItem(materia)
+            }
         }
-        Button(onClick = {
-            val a = numero1.toDoubleOrNull() ?: 0.0
-            val b = numero2.toDoubleOrNull() ?: 0.0
-            resultado = calcular(a, b, "restar").toString()
-        }) {
-            Text("Restar")
-        }
-        Button(onClick = {
-            val a = numero1.toDoubleOrNull() ?: 0.0
-            val b = numero2.toDoubleOrNull() ?: 0.0
-            resultado = calcular(a, b, "multiplicar").toString()
-        }) {
-            Text("Multiplicar")
-        }
-        Text("Resultado: $resultado")
     }
 }
 
-fun calcular(a: Double, b: Double, operacion: String): Double {
-    Log.d("CALCULADORA", "a=$a b=$b operacion=$operacion")
-    return when (operacion) {
-        "sumar" -> a + b
-        "restar" -> a - b
-        "multiplicar" -> a * b
-        else -> 0.0
+@Composable
+fun MateriaItem(materia: Materia) {
+    Row {
+        Text(text = materia.nombre)
+        Text(text = " - Año ${materia.anio}")
+        Text(text = if (materia.aprobada) " - Aprobada" else " - Pendiente") //cambio dinamico si esta aprobado o no
     }
 }
 
@@ -100,7 +85,7 @@ fun PresentacionPreview() {
     MiPrimerProyectoTheme {
         Column(modifier = Modifier
             .padding(16.dp)) {
-            Calculadora()
+            ListaDeMaterias()
         }
     }
 }
