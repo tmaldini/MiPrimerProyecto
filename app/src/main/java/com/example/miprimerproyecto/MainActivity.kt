@@ -58,8 +58,6 @@ class MainActivity : ComponentActivity() {
 // dos previews: uno normal y otro en modo oscuro (u otra
 // configuración visual disponible).
 
-
-
 @Composable
 fun ListaDeTareas() {
     var texto by remember { mutableStateOf("") }
