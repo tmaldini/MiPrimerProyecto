@@ -1,7 +1,9 @@
 package com.example.miprimerproyecto
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
+import android.view.Surface
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -25,8 +27,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.miprimerproyecto.ui.theme.MiPrimerProyectoTheme
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,15 +50,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+// ============================================
+// EJERCICIO 11 — Recursos Android y configuración visual
+// ============================================
+// Consigna: mover los textos importantes a strings.xml y
+// usarlos desde Compose con stringResource. Crear al menos
+// dos previews: uno normal y otro en modo oscuro (u otra
+// configuración visual disponible).
 
-// ============================================
-// EJERCICIO 10 — Lista editable: tareas del estudiante
-// ============================================
-// Consigna: campo para escribir una tarea, botón Agregar, lista
-// de tareas, posibilidad de eliminar una tarea, no agregar
-// cadenas vacías.
-// (Los desafíos —cantidad, Borrar todas, marcar completada—
-// NO están acá: la consigna base no los pide.)
+
 
 @Composable
 fun ListaDeTareas() {
@@ -80,7 +85,7 @@ fun ListaDeTareas() {
                 texto = ""
             }
         }) {
-            Text("Agregar")
+            Text(text = stringResource(R.string.agregar))
         }
 
         LazyColumn {
@@ -96,13 +101,25 @@ fun ListaDeTareas() {
     }
 }
 
+// Preview 1: configuración normal
 @Preview(showBackground = true)
 @Composable
-fun PresentacionPreview() {
+fun FichaPreview() {
     MiPrimerProyectoTheme {
-        Column(modifier = Modifier
-            .padding(16.dp)) {
-            ListaDeTareas()
+        Surface(color = MaterialTheme.colorScheme.background) {
+            Text(text = stringResource(R.string.titulo_ficha))
         }
     }
 }
+
+// Preview 2: modo oscuro
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun FichaPreviewOscuro() {
+    MiPrimerProyectoTheme(darkTheme = true, dynamicColor = false) {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            Text(text = stringResource(R.string.titulo_ficha))
+        }
+    }
+}
+
