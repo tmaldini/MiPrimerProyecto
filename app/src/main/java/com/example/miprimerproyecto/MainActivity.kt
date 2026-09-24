@@ -42,6 +42,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// ============================================
+// EJERCICIO 8 — Calculadora pequeña, Logcat y debugger
+// ============================================
+// Consigna: calculadora de dos números (sumar, restar, multiplicar)
+// con la lógica en una función separada. Parte B: usar breakpoint
+// y Debug. Parte C: agregar un log con tag reconocible.
+
 @Composable
 fun Calculadora() {
     var numero1 by remember { mutableStateOf("") }
@@ -57,12 +64,15 @@ fun Calculadora() {
         OutlinedTextField(
             value = numero2,
             onValueChange = { numero2 = it },
-            label = { Text("Número 2") }      //devuelve siempre string
+            label = { Text("Número 2") }
         )
         Button(onClick = {
-            val a = numero1.toDoubleOrNull() ?: 0.0  //lo convierte a doble o null
+            // ?: 0.0 (operador Elvis): si toDoubleOrNull() da null
+            // (campo vacío o texto inválido), usa 0.0 en vez de
+            // romper la app
+            val a = numero1.toDoubleOrNull() ?: 0.0
             val b = numero2.toDoubleOrNull() ?: 0.0
-            resultado = calcular(a, b, "sumar").toString() //lo vuelve a convertir a string
+            resultado = calcular(a, b, "sumar").toString()
         }) {
             Text("Sumar")
         }
@@ -84,7 +94,13 @@ fun Calculadora() {
     }
 }
 
-fun calcular(a: Double, b: Double, operacion: String): Double { //no es composite porque es pura logica
+// La lógica va en una función separada de la interfaz (pide la
+// consigna), NO @Composable. Acá es donde pondría el breakpoint
+// para la Parte B (por ejemplo en la línea del "when"), corriendo
+// con Debug en vez de Run.
+fun calcular(a: Double, b: Double, operacion: String): Double {
+    // Log con tag "CALCULADORA" (Parte C): se filtra por ese tag
+    // en la pestaña Logcat para ver solo estos mensajes
     Log.d("CALCULADORA", "a=$a b=$b operacion=$operacion")
     return when (operacion) {
         "sumar" -> a + b
